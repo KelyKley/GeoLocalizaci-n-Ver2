@@ -3,12 +3,14 @@
     padding: 0;
 }
 
-html, body {
+html,
+body {
     width: 100%;
 }
 
 body {
-    background: #18bc9c; /*rgba(68, 157, 68, 0.2);*/
+    background: #18bc9c;
+    /*rgba(68, 157, 68, 0.2);*/
 }
 
 button {

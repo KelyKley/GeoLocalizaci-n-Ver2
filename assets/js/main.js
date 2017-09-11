@@ -1,41 +1,42 @@
+"use strict";
 
 const app = {
     map: undefined,
 
-    init: function(){
-        app.map = new google.maps.Map(document.getElementById("map"),{
-        zoom: 10,
-        center: {lat: -16.3988900, lng: -71.5350000},
-        mapTypeControl: false,
-        zoomControl: false,
-        streetViewControl:false
-    });
+    init: function() {
+        app.map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 10,
+            center: { lat: -16.3988900, lng: -71.5350000 },
+            mapTypeControl: false,
+            zoomControl: false,
+            streetViewControl: false
+        });
 
-    let partida = document.getElementById('origen');
-    let autocompleteOrigen = new google.maps.places.Autocomplete(partida);
-    autocompleteOrigen.bindTo('bounds', app.map);
-    let detalleUbicacionOrigen = new google.maps.InfoWindow();
-    let markerOrigen = app.crearMarcador(app.map);
+        let partida = document.getElementById('origen');
+        let autoPartida = new google.maps.places.Autocomplete(partida);
+        autoPartida.bindTo('bounds', app.map);
+        let detalleUbicacionOrigen = new google.maps.InfoWindow();
+        let marcadorPartida = app.crearMarcador(app.map);
 
-    app.crearListener(autocompleteOrigen, detalleUbicacionOrigen, markerOrigen);
+        app.crearListener(autoPartida, detalleUbicacionOrigen, marcadorPartida);
 
-    let llegada = document.getElementById('destino');
-    let autocompleteDestino = new google.maps.places.Autocomplete(llegada);
-    autocompleteDestino.bindTo('bounds', app.map);
-    let detalleUbicacionDestino = new google.maps.InfoWindow();
-    let markerDestino = app.crearMarcador(app.map);
+        let llegada = document.getElementById('destino');
+        let autoLlegada = new google.maps.places.Autocomplete(llegada);
+        autoLlegada.bindTo('bounds', app.map);
+        let detalleUbicacionDestino = new google.maps.InfoWindow();
+        let marcadorLlegada = app.crearMarcador(app.map);
 
-    app.crearListener(autocompleteDestino, detalleUbicacionDestino, markerDestino);
+        app.crearListener(autoLlegada, detalleUbicacionDestino, marcadorLlegada);
 
-    /* Mi ubicación actual */
-    document.getElementById("encuentrame").addEventListener("click", app.buscarMiUbicacion);
-    /* Ruta */
-    let directionsService = new google.maps.DirectionsService;
-    let directionsDisplay = new google.maps.DirectionsRenderer;
+        /* Mi ubicación actual */
+        document.getElementById("encuentrame").addEventListener("click", app.buscarUbicacion);
+        /* Ruta */
+        let directionsService = new google.maps.DirectionsService;
+        let directionsDisplay = new google.maps.DirectionsRenderer;
 
-    document.getElementById("ruta").addEventListener("click", function(){app.dibujarRuta(directionsService, directionsDisplay)});
+        document.getElementById("ruta").addEventListener("click", function() { app.dibujarRuta(directionsService, directionsDisplay) });
 
-    directionsDisplay.setMap(app.map);
+        directionsDisplay.setMap(app.map);
     },
     crearListener: function(autocomplete, detalleUbicacion, marker) {
         autocomplete.addListener('place_changed', function() {
@@ -46,8 +47,8 @@ const app = {
         });
     },
 
-    buscarMiUbicacion: function() {
-        if(navigator.geolocation){
+    buscarUbicacion: function() {
+        if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(app.marcarUbicacionAutomatica, app.funcionError);
         }
     },
@@ -57,16 +58,16 @@ const app = {
     },
 
     marcarUbicacionAutomatica: function(posicion) {
-        let latitud=posicion.coords.latitude;
-             let longitud=posicion.coords.longitude;
+        let latitud = posicion.coords.latitude;
+        let longitud = posicion.coords.longitude;
 
-             let miUbicacion= new google.maps.Marker({
-               position:{lat:latitud,lng:longitud},
-               animation: google.maps.Animation.DROP,
-               map:app.map
-             });
-               app.map.setZoom(17);
-               app.map.setCenter(miUbicacion.position);
+        let miUbicacion = new google.maps.Marker({
+            position: { lat: latitud, lng: longitud },
+            animation: google.maps.Animation.DROP,
+            map: app.map
+        });
+        app.map.setZoom(17);
+        app.map.setCenter(miUbicacion.position);
     },
 
     marcarUbicacion: function(place, detalleUbicacion, marker) {
@@ -87,11 +88,11 @@ const app = {
         marker.setVisible(true);
 
         let address = '';
-        if (place.address_components) {
+        if (place.referenciaDirecion) {
             address = [
-                (place.address_components[0] && place.address_components[0].short_name || ''),
-                (place.address_components[1] && place.address_components[1].short_name || ''),
-                (place.address_components[2] && place.address_components[2].short_name || '')
+                (place.referenciaDirecion[0] && place.referenciaDirecion[0].short_name || ''),
+                (place.referenciaDirecion[1] && place.referenciaDirecion[1].short_name || ''),
+                (place.referenciaDirecion[2] && place.referenciaDirecion[2].short_name || '')
             ].join(' ');
         }
 
@@ -122,19 +123,19 @@ const app = {
         let origin = document.getElementById("origen").value;
         let destination = document.getElementById('destino').value;
 
-        if(destination != "" && destination != "") {
+        if (destination != "" && destination != "") {
             directionsService.route({
-                origin: origin,
-                destination: destination,
-                travelMode: "DRIVING"
-            },
-            function(response, status) {
-                if (status === "OK") {
-                    directionsDisplay.setDirections(response);
-                } else {
-                    funcionErrorRuta();
-                }
-            });
+                    origin: origin,
+                    destination: destination,
+                    travelMode: "DRIVING"
+                },
+                function(response, status) {
+                    if (status === "OK") {
+                        directionsDisplay.setDirections(response);
+                    } else {
+                        funcionErrorRuta();
+                    }
+                });
         }
     },
 
